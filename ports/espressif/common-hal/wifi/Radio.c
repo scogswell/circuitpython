@@ -328,8 +328,8 @@ wifi_radio_error_t common_hal_wifi_radio_connect(wifi_radio_obj_t *self, uint8_t
     esp_wifi_set_config(ESP_IF_WIFI_STA, config);
     self->starting_retries = 5;
     self->retries_left = 5;
-    esp_wifi_start();
     esp_wifi_connect();
+    mp_printf(&mp_plat_print, "This is a debug message inside the core\n");
 
     do {
         RUN_BACKGROUND_TASKS;
