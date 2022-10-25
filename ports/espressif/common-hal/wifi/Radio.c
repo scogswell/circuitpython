@@ -40,6 +40,7 @@
 #include "shared-module/ipaddress/__init__.h"
 
 #include "components/esp_wifi/include/esp_wifi.h"
+#include "components/wpa_supplicant/esp_supplicant/include/esp_wpa2.h"
 #include "components/lwip/include/apps/ping/ping_sock.h"
 
 #if CIRCUITPY_MDNS
@@ -47,6 +48,10 @@
 #endif
 
 #define MAC_ADDRESS_LENGTH 6
+
+#define EXAMPLE_EAP_ID "***REMOVED***"
+#define EXAMPLE_EAP_USERNAME "***REMOVED***"
+#define EXAMPLE_EAP_PASSWORD "***REMOVED***"
 
 static void set_mode_station(wifi_radio_obj_t *self, bool state) {
     wifi_mode_t next_mode;
@@ -314,9 +319,16 @@ wifi_radio_error_t common_hal_wifi_radio_connect(wifi_radio_obj_t *self, uint8_t
     } else {
         config->sta.scan_method = WIFI_FAST_SCAN;
     }
+
+    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EXAMPLE_EAP_ID, strlen(EXAMPLE_EAP_ID));
+    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EXAMPLE_EAP_USERNAME, strlen(EXAMPLE_EAP_USERNAME));
+    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EXAMPLE_EAP_PASSWORD, strlen(EXAMPLE_EAP_PASSWORD));
+    esp_wifi_sta_wpa2_ent_enable(); 
+
     esp_wifi_set_config(ESP_IF_WIFI_STA, config);
     self->starting_retries = 5;
     self->retries_left = 5;
+    esp_wifi_start();
     esp_wifi_connect();
 
     do {

@@ -425,7 +425,7 @@ STATIC mp_obj_t wifi_radio_connect(size_t n_args, const mp_obj_t *pos_args, mp_m
     if (error == WIFI_RADIO_ERROR_AUTH_FAIL) {
         mp_raise_ConnectionError(translate("Authentication failure"));
     } else if (error == WIFI_RADIO_ERROR_NO_AP_FOUND) {
-        mp_raise_ConnectionError(translate("No network with that ssid"));
+        mp_raise_ConnectionError(translate("No network with that ssid man"));
     } else if (error != WIFI_RADIO_ERROR_NONE) {
         mp_raise_msg_varg(&mp_type_ConnectionError, translate("Unknown failure %d"), error);
     }
