@@ -114,11 +114,12 @@ extern void common_hal_wifi_radio_set_ipv4_address(wifi_radio_obj_t *self, mp_ob
 
 extern mp_int_t common_hal_wifi_radio_ping(wifi_radio_obj_t *self, mp_obj_t ip_address, mp_float_t timeout);
 
-void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self, uint8_t *ssid, size_t ssid_len,
-                                            uint8_t *identity, size_t identity_len,
+void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self, uint8_t *identity, size_t identity_len,
                                             uint8_t *username, size_t username_len, 
                                             uint8_t *password, size_t password_len);
 extern void common_hal_wifi_radio_set_enterprise_mode(wifi_radio_obj_t *self, bool enterprise);
+extern mp_obj_t common_hal_wifi_radio_get_enterprise_mode(wifi_radio_obj_t *self);
+
 
 
 #endif // MICROPY_INCLUDED_SHARED_BINDINGS_WIFI_RADIO_H

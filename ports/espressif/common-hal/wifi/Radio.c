@@ -49,9 +49,9 @@
 
 #define MAC_ADDRESS_LENGTH 6
 
-#define EXAMPLE_EAP_ID "***REMOVED***"
-#define EXAMPLE_EAP_USERNAME "***REMOVED***"
-#define EXAMPLE_EAP_PASSWORD "***REMOVED***"
+// #define EXAMPLE_EAP_ID "xxxxxxxxxxxx"
+// #define EXAMPLE_EAP_USERNAME "xxxxxxxxxxxxxxx"
+// #define EXAMPLE_EAP_PASSWORD "xxxxxxxxxxxxxx"
 
 static void set_mode_station(wifi_radio_obj_t *self, bool state) {
     wifi_mode_t next_mode;
@@ -320,16 +320,17 @@ wifi_radio_error_t common_hal_wifi_radio_connect(wifi_radio_obj_t *self, uint8_t
         config->sta.scan_method = WIFI_FAST_SCAN;
     }
 
-    common_hal_wifi_radio_set_enterprise_mode(self, 0);
-    mp_printf(&mp_plat_print, "The state of self->enterprise is %d\n",self->enterprise);
-    common_hal_wifi_radio_set_enterprise_mode(self, 1);
+    // mp_printf(&mp_plat_print, "The state of self->enterprise is %d\n",self->enterprise);
+    // common_hal_wifi_radio_set_enterprise_mode(self, 0);
+    // mp_printf(&mp_plat_print, "The state of self->enterprise is %d\n",self->enterprise);
+    // common_hal_wifi_radio_set_enterprise_mode(self, 1);
     mp_printf(&mp_plat_print, "The state of self->enterprise is %d\n",self->enterprise);
 
     if (self->enterprise == 1){
         mp_printf(&mp_plat_print, "Connecting in Enterprise mode\n");
-        esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EXAMPLE_EAP_ID, strlen(EXAMPLE_EAP_ID));
-        esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EXAMPLE_EAP_USERNAME, strlen(EXAMPLE_EAP_USERNAME));
-        esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EXAMPLE_EAP_PASSWORD, strlen(EXAMPLE_EAP_PASSWORD));
+        // esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EXAMPLE_EAP_ID, strlen(EXAMPLE_EAP_ID));
+        // esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EXAMPLE_EAP_USERNAME, strlen(EXAMPLE_EAP_USERNAME));
+        // esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EXAMPLE_EAP_PASSWORD, strlen(EXAMPLE_EAP_PASSWORD));
         esp_wifi_sta_wpa2_ent_enable();
     } else {
         mp_printf(&mp_plat_print, "Connecting in normal mode\n");
@@ -535,24 +536,33 @@ void common_hal_wifi_radio_gc_collect(wifi_radio_obj_t *self) {
     gc_collect_ptr(self->current_scan);
 }
 
-void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self, uint8_t *ssid, size_t ssid_len,
+void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self,
                                             uint8_t *identity, size_t identity_len,
                                             uint8_t *username, size_t username_len, 
                                             uint8_t *password, size_t password_len) {
-    // Ingest parameters for WPA enterprise mode 
+    // Ingest parameters for WPA enterprise mode
+    mp_printf(&mp_plat_print, "param identity being set to %s\n",identity);
+    mp_printf(&mp_plat_print, "param username being set to %s\n",username);
+    mp_printf(&mp_plat_print, "param password being set to %s\n",password);
+
     esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)identity, identity_len);
     esp_wifi_sta_wpa2_ent_set_username((uint8_t *)username, username_len);
     esp_wifi_sta_wpa2_ent_set_password((uint8_t *)password, password_len);
-    esp_wifi_sta_wpa2_ent_enable(); 
+    //esp_wifi_sta_wpa2_ent_enable(); 
 }
 
 void common_hal_wifi_radio_set_enterprise_mode(wifi_radio_obj_t *self, bool enterprise){
     if (enterprise == 0 ) {
         self->enterprise = 0;
-        mp_printf(&mp_plat_print, "enterprise is set to 0\n");
+        mp_printf(&mp_plat_print, "-> enterprise is being set to 0\n");
     }
     if (enterprise == 1 ) {
         self->enterprise = 1; 
-        mp_printf(&mp_plat_print, "enterprise is set to 1\n");
+        mp_printf(&mp_plat_print, "-> enterprise is being set to 1\n");
     }
+}   
+
+mp_obj_t common_hal_wifi_radio_get_enterprise_mode(wifi_radio_obj_t *self) {
+    //mp_printf(&mp_plat_print, "I'm responding that enterprise is %d\n",self->enterprise);
+    return mp_obj_new_bool(self->enterprise);
 }
