@@ -425,7 +425,7 @@ STATIC mp_obj_t wifi_radio_connect(size_t n_args, const mp_obj_t *pos_args, mp_m
     if (error == WIFI_RADIO_ERROR_AUTH_FAIL) {
         mp_raise_ConnectionError(translate("Authentication failure"));
     } else if (error == WIFI_RADIO_ERROR_NO_AP_FOUND) {
-        mp_raise_ConnectionError(translate("No network with that ssid man"));
+        mp_raise_ConnectionError(translate("No network with that ssid"));
     } else if (error != WIFI_RADIO_ERROR_NONE) {
         mp_raise_msg_varg(&mp_type_ConnectionError, translate("Unknown failure %d"), error);
     }
@@ -611,7 +611,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_ping_obj, 1, wifi_radio_ping);
 
 STATIC mp_obj_t wifi_radio_get_enterprise(mp_obj_t self_in) {
     wifi_radio_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(&mp_plat_print, "I'm in the python routine\n");
+    //mp_printf(&mp_plat_print, "I'm in the python routine\n");
     return common_hal_wifi_radio_get_enterprise_mode(self);
     //return mp_obj_new_bool(0);
 }
@@ -619,7 +619,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(wifi_radio_get_enterprise_obj, wifi_radio_get_e
 
 STATIC mp_obj_t wifi_radio_set_enterprise(mp_obj_t self, mp_obj_t enterprise_mode){
     const bool enterprise_bool = mp_obj_is_true(enterprise_mode);
-    mp_printf(&mp_plat_print,"Python request to change enterprise to %d\n",enterprise_bool);
+    //mp_printf(&mp_plat_print,"Python request to change enterprise to %d\n",enterprise_bool);
     common_hal_wifi_radio_set_enterprise_mode(self, enterprise_bool);
     return mp_const_none;
 }
@@ -629,25 +629,6 @@ MP_PROPERTY_GETSET(wifi_radio_enterprise_obj,
     (mp_obj_t)&wifi_radio_get_enterprise_obj,
     (mp_obj_t)&wifi_radio_set_enterprise_obj);
 
-
-// STATIC mp_obj_t wifi_radio_set_hostname(mp_obj_t self_in, mp_obj_t hostname_in) {
-//     mp_buffer_info_t hostname;
-//     mp_get_buffer_raise(hostname_in, &hostname, MP_BUFFER_READ);
-
-//     mp_arg_validate_length_range(hostname.len, 1, 253, MP_QSTR_hostname);
-
-//     if (!hostname_valid(hostname.buf, hostname.len)) {
-//         mp_raise_ValueError(translate("invalid hostname"));
-//     }
-
-//     wifi_radio_obj_t *self = MP_OBJ_TO_PTR(self_in);
-//     common_hal_wifi_radio_set_hostname(self, hostname.buf);
-
-//     return mp_const_none;
-// void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self, uint8_t *ssid, size_t ssid_len,
-//                                             uint8_t *identity, size_t identity_len,
-//                                             uint8_t *username, size_t username_len, 
-//                                             uint8_t *password, size_t password_len) {
 STATIC mp_obj_t wifi_radio_set_enterprise_parameters(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     //enum { ARG_ipv4, ARG_netmask, ARG_gateway, ARG_ipv4_dns };
     enum { ARG_identity, ARG_username, ARG_password};
@@ -661,7 +642,7 @@ STATIC mp_obj_t wifi_radio_set_enterprise_parameters(size_t n_args, const mp_obj
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    mp_printf(&mp_plat_print, "In python enterprise_parameters\n");
+    //mp_printf(&mp_plat_print, "In python enterprise_parameters\n");
 
     mp_buffer_info_t identity;
     identity.len = 0;
@@ -678,7 +659,7 @@ STATIC mp_obj_t wifi_radio_set_enterprise_parameters(size_t n_args, const mp_obj
     mp_get_buffer_raise(args[ARG_password].u_obj, &password, MP_BUFFER_READ);
     mp_arg_validate_length_range(password.len,1,32,MP_QSTR_password);
 
-    mp_printf(&mp_plat_print, "In python calling common_hal\n");
+    //mp_printf(&mp_plat_print, "In python calling common_hal\n");
     common_hal_wifi_radio_set_enterprise_params(self, identity.buf, identity.len,
                                                       username.buf, username.len,
                                                       password.buf, password.len); 
