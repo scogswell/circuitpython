@@ -609,6 +609,7 @@ STATIC mp_obj_t wifi_radio_ping(size_t n_args, const mp_obj_t *pos_args, mp_map_
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_ping_obj, 1, wifi_radio_ping);
 
+// get/set flag for wifi.radio.enterprise to enable enterprise mode when connecting wifi
 STATIC mp_obj_t wifi_radio_get_enterprise(mp_obj_t self_in) {
     wifi_radio_obj_t *self = MP_OBJ_TO_PTR(self_in);
     //mp_printf(&mp_plat_print, "I'm in the python routine\n");
@@ -629,7 +630,8 @@ MP_PROPERTY_GETSET(wifi_radio_enterprise_obj,
     (mp_obj_t)&wifi_radio_get_enterprise_obj,
     (mp_obj_t)&wifi_radio_set_enterprise_obj);
 
-STATIC mp_obj_t wifi_radio_set_enterprise_parameters(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
+// Set the extra parameters needed for WPA Enterprise (identity, username, password)
+STATIC mp_obj_t wifi_radio_set_enterprise_id(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
     //enum { ARG_ipv4, ARG_netmask, ARG_gateway, ARG_ipv4_dns };
     enum { ARG_identity, ARG_username, ARG_password};
     static const mp_arg_t allowed_args[] = {
@@ -665,7 +667,7 @@ STATIC mp_obj_t wifi_radio_set_enterprise_parameters(size_t n_args, const mp_obj
                                                       password.buf, password.len); 
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_set_enterprise_parameters_obj, 1, wifi_radio_set_enterprise_parameters);
+STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_set_enterprise_id_obj, 1, wifi_radio_set_enterprise_id);
 
 
 STATIC const mp_rom_map_elem_t wifi_radio_locals_dict_table[] = {
@@ -709,7 +711,7 @@ STATIC const mp_rom_map_elem_t wifi_radio_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_ping), MP_ROM_PTR(&wifi_radio_ping_obj) },
 
     { MP_ROM_QSTR(MP_QSTR_enterprise), MP_ROM_PTR(&wifi_radio_enterprise_obj) },
-    { MP_ROM_QSTR(MP_QSTR_set_enterprise_id),    MP_ROM_PTR(&wifi_radio_set_enterprise_parameters_obj) },
+    { MP_ROM_QSTR(MP_QSTR_set_enterprise_id),    MP_ROM_PTR(&wifi_radio_set_enterprise_id_obj) },
 
 };
 
