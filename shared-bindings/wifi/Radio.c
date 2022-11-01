@@ -649,17 +649,17 @@ STATIC mp_obj_t wifi_radio_set_enterprise_id(size_t n_args, const mp_obj_t *pos_
     mp_buffer_info_t identity;
     identity.len = 0;
     mp_get_buffer_raise(args[ARG_identity].u_obj, &identity, MP_BUFFER_READ);
-    mp_arg_validate_length_range(identity.len,1,32,MP_QSTR_identity);
+    mp_arg_validate_length_range(identity.len,0,32,MP_QSTR_identity);
 
     mp_buffer_info_t username;
     username.len = 0;
     mp_get_buffer_raise(args[ARG_username].u_obj, &username, MP_BUFFER_READ);
-    mp_arg_validate_length_range(username.len,1,32,MP_QSTR_username);
+    mp_arg_validate_length_range(username.len,0,32,MP_QSTR_username);
 
     mp_buffer_info_t password;
     password.len = 0;
     mp_get_buffer_raise(args[ARG_password].u_obj, &password, MP_BUFFER_READ);
-    mp_arg_validate_length_range(password.len,1,32,MP_QSTR_password);
+    mp_arg_validate_length_range(password.len,0,32,MP_QSTR_password);
 
     // mp_printf(&mp_plat_print, "In python calling common_hal\n");
     common_hal_wifi_radio_set_enterprise_params(self, identity.buf, identity.len,

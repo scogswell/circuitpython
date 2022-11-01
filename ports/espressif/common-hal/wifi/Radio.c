@@ -537,9 +537,23 @@ void common_hal_wifi_radio_set_enterprise_params(wifi_radio_obj_t *self,
     // mp_printf(&mp_plat_print, "param username being set to [%s]\n",username);
     // mp_printf(&mp_plat_print, "param password being set to [%s]\n",password);
 
-    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)identity, identity_len);
-    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)username, username_len);
-    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)password, password_len);
+    if (identity_len > 0) {
+        esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)identity, identity_len);
+    } else {
+        esp_wifi_sta_wpa2_ent_clear_identity();
+    }
+
+    if (username_len > 0) {
+        esp_wifi_sta_wpa2_ent_set_username((uint8_t *)username, username_len);
+    } else {
+        esp_wifi_sta_wpa2_ent_clear_username();
+    }
+
+    if (password_len > 0) {
+        esp_wifi_sta_wpa2_ent_set_password((uint8_t *)password, password_len);
+    } else {
+        esp_wifi_sta_wpa2_ent_clear_password();
+    }
 }
 
 void common_hal_wifi_radio_set_enterprise_mode(wifi_radio_obj_t *self, bool enterprise) {
