@@ -612,15 +612,15 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_ping_obj, 1, wifi_radio_ping);
 // get/set flag for wifi.radio.enterprise to enable enterprise mode when connecting wifi
 STATIC mp_obj_t wifi_radio_get_enterprise(mp_obj_t self_in) {
     wifi_radio_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    //mp_printf(&mp_plat_print, "I'm in the python routine\n");
+    // mp_printf(&mp_plat_print, "I'm in the python routine\n");
     return common_hal_wifi_radio_get_enterprise_mode(self);
-    //return mp_obj_new_bool(0);
+    // return mp_obj_new_bool(0);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(wifi_radio_get_enterprise_obj, wifi_radio_get_enterprise);
 
-STATIC mp_obj_t wifi_radio_set_enterprise(mp_obj_t self, mp_obj_t enterprise_mode){
+STATIC mp_obj_t wifi_radio_set_enterprise(mp_obj_t self, mp_obj_t enterprise_mode) {
     const bool enterprise_bool = mp_obj_is_true(enterprise_mode);
-    //mp_printf(&mp_plat_print,"Python request to change enterprise to %d\n",enterprise_bool);
+    // mp_printf(&mp_plat_print,"Python request to change enterprise to %d\n",enterprise_bool);
     common_hal_wifi_radio_set_enterprise_mode(self, enterprise_bool);
     return mp_const_none;
 }
@@ -632,7 +632,7 @@ MP_PROPERTY_GETSET(wifi_radio_enterprise_obj,
 
 // Set the extra parameters needed for WPA Enterprise (identity, username, password)
 STATIC mp_obj_t wifi_radio_set_enterprise_id(size_t n_args, const mp_obj_t *pos_args, mp_map_t *kw_args) {
-    //enum { ARG_ipv4, ARG_netmask, ARG_gateway, ARG_ipv4_dns };
+    // enum { ARG_ipv4, ARG_netmask, ARG_gateway, ARG_ipv4_dns };
     enum { ARG_identity, ARG_username, ARG_password};
     static const mp_arg_t allowed_args[] = {
         { MP_QSTR_identity, MP_ARG_REQUIRED | MP_ARG_KW_ONLY | MP_ARG_OBJ, },
@@ -644,7 +644,7 @@ STATIC mp_obj_t wifi_radio_set_enterprise_id(size_t n_args, const mp_obj_t *pos_
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    //mp_printf(&mp_plat_print, "In python enterprise_parameters\n");
+    // mp_printf(&mp_plat_print, "In python enterprise_parameters\n");
 
     mp_buffer_info_t identity;
     identity.len = 0;
@@ -661,13 +661,19 @@ STATIC mp_obj_t wifi_radio_set_enterprise_id(size_t n_args, const mp_obj_t *pos_
     mp_get_buffer_raise(args[ARG_password].u_obj, &password, MP_BUFFER_READ);
     mp_arg_validate_length_range(password.len,1,32,MP_QSTR_password);
 
-    //mp_printf(&mp_plat_print, "In python calling common_hal\n");
+    // mp_printf(&mp_plat_print, "In python calling common_hal\n");
     common_hal_wifi_radio_set_enterprise_params(self, identity.buf, identity.len,
-                                                      username.buf, username.len,
-                                                      password.buf, password.len); 
+        username.buf, username.len,
+        password.buf, password.len);
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_KW(wifi_radio_set_enterprise_id_obj, 1, wifi_radio_set_enterprise_id);
+
+STATIC mp_obj_t wifi_radio_reset(mp_obj_t self) {
+    common_hal_wifi_radio_reset(self);
+    return mp_const_none;
+}
+MP_DEFINE_CONST_FUN_OBJ_1(wifi_radio_reset_obj, wifi_radio_reset);
 
 
 STATIC const mp_rom_map_elem_t wifi_radio_locals_dict_table[] = {
@@ -712,6 +718,8 @@ STATIC const mp_rom_map_elem_t wifi_radio_locals_dict_table[] = {
 
     { MP_ROM_QSTR(MP_QSTR_enterprise), MP_ROM_PTR(&wifi_radio_enterprise_obj) },
     { MP_ROM_QSTR(MP_QSTR_set_enterprise_id),    MP_ROM_PTR(&wifi_radio_set_enterprise_id_obj) },
+    { MP_ROM_QSTR(MP_QSTR_reset),    MP_ROM_PTR(&wifi_radio_reset_obj) },
+
 
 };
 
@@ -722,4 +730,3 @@ const mp_obj_type_t wifi_radio_type = {
     .name = MP_QSTR_Radio,
     .locals_dict = (mp_obj_t)&wifi_radio_locals_dict,
 };
-

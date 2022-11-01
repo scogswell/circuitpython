@@ -2642,7 +2642,7 @@ msgstr ""
 msgid "can't set 512 block size"
 msgstr ""
 
-#: py/objnamedtuple.c
+#: py/objexcept.c py/objnamedtuple.c
 msgid "can't set attribute"
 msgstr ""
 
