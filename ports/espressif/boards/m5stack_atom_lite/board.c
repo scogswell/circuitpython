@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Lucian Copeland for Adafruit Industries
+ * Copyright (c) 2022 CDarius
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,6 @@
  * THE SOFTWARE.
  */
 
-#pragma once
+#include "supervisor/board.h"
 
-#include "py/obj.h"
-
-typedef struct {
-    mp_obj_base_t base;
-    mp_float_t monotonic_time;
-} alarm_time_timealarm_obj_t;
-
-mp_obj_t alarm_time_timealarm_find_triggered_alarm(size_t n_alarms, const mp_obj_t *alarms);
-mp_obj_t alarm_time_timealarm_record_wake_alarm(void);
-
-void alarm_time_timealarm_reset(void);
-void alarm_time_timealarm_set_alarms(bool deep_sleep, size_t n_alarms, const mp_obj_t *alarms);
-bool alarm_time_timealarm_woke_this_cycle(void);
-bool alarm_time_timealarm_is_set(void);
+// Use the MP_WEAK supervisor/shared/board.c versions of routines not defined here.

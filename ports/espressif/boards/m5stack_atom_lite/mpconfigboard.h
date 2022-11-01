@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Lucian Copeland for Adafruit Industries
+ * Copyright (c) 2022 CDarius
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,26 @@
  * THE SOFTWARE.
  */
 
-#pragma once
+// Micropython setup
 
-#include "py/obj.h"
+#define MICROPY_HW_BOARD_NAME       "M5Stack Atom Lite"
+#define MICROPY_HW_MCU_NAME         "ESP32"
 
-typedef struct {
-    mp_obj_base_t base;
-    mp_float_t monotonic_time;
-} alarm_time_timealarm_obj_t;
+#define MICROPY_HW_NEOPIXEL         (&pin_GPIO27)
 
-mp_obj_t alarm_time_timealarm_find_triggered_alarm(size_t n_alarms, const mp_obj_t *alarms);
-mp_obj_t alarm_time_timealarm_record_wake_alarm(void);
+#define CIRCUITPY_BOARD_I2C         (2)
+#define CIRCUITPY_BOARD_I2C_PIN     {{.scl = &pin_GPIO21, .sda = &pin_GPIO25}, \
+                                     {.scl = &pin_GPIO32, .sda = &pin_GPIO26}}
 
-void alarm_time_timealarm_reset(void);
-void alarm_time_timealarm_set_alarms(bool deep_sleep, size_t n_alarms, const mp_obj_t *alarms);
-bool alarm_time_timealarm_woke_this_cycle(void);
-bool alarm_time_timealarm_is_set(void);
+#define CIRCUITPY_BOARD_SPI         (1)
+#define CIRCUITPY_BOARD_SPI_PIN     {{.clock = &pin_GPIO18, .mosi = &pin_GPIO23, .miso = &pin_GPIO19}}
+
+// For entering safe mode
+#define CIRCUITPY_BOOT_BUTTON       (&pin_GPIO39)
+
+// Explanation of how a user got into safe mode
+#define BOARD_USER_SAFE_MODE_ACTION translate("The central button was pressed at start up.\n")
+
+// UART pins attached to the USB-serial converter chip
+#define CIRCUITPY_CONSOLE_UART_TX (&pin_GPIO1)
+#define CIRCUITPY_CONSOLE_UART_RX (&pin_GPIO3)
