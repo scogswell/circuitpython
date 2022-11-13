@@ -1,9 +1,7 @@
 /*
- * This file is part of the MicroPython project, http://micropython.org/
- *
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Lucian Copeland for Adafruit Industries
+ * Copyright (c) 2022 Matthew McGowan for Blues Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +22,54 @@
  * THE SOFTWARE.
  */
 
-#pragma once
 
-#include "py/obj.h"
-#include "py/objtuple.h"
+#ifndef _MEMS_AUDIO_LL_H_
+#define _MEMS_AUDIO_LL_H_
 
-#include "shared-bindings/microcontroller/Pin.h"
+#include "MEMS_Audio.h"
 
-typedef struct {
-    mp_obj_base_t base;
-    const mcu_pin_obj_t *pin;
-    bool value;
-    bool pull;
-    bool edge;
-} alarm_pin_pinalarm_obj_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-mp_obj_t alarm_pin_pinalarm_find_triggered_alarm(size_t n_alarms, const mp_obj_t *alarms);
-mp_obj_t alarm_pin_pinalarm_record_wake_alarm(void);
 
-void alarm_pin_pinalarm_reset(void);
-void alarm_pin_pinalarm_light_reset(void);
-void alarm_pin_pinalarm_set_alarms(bool deep_sleep, size_t n_alarms, const mp_obj_t *alarms);
-bool alarm_pin_pinalarm_woke_this_cycle(void);
-void alarm_pin_pinalarm_entering_deep_sleep(void);
+mems_audio_err_t mems_audio_ll_init(MemsAudio *audio);
+mems_audio_err_t mems_audio_ll_uninit(MemsAudio *audio);
+
+/**
+ * @brief Asynchronously records audio.
+ *
+ * @param audio
+ * @param pdmBuffer
+ * @param pdmBufferLength
+ * @return mems_audio_err_t
+ */
+mems_audio_err_t mems_audio_ll_record(MemsAudio *audio);
+
+/**
+ * @brief Pause recording audio.
+ */
+mems_audio_err_t mems_audio_ll_pause(MemsAudio *audio);
+
+/**
+ * @brief Resume recording audio.
+ *
+ * @param audio
+ * @return mems_audio_err_t
+ */
+mems_audio_err_t mems_audio_ll_resume(MemsAudio *audio);
+
+/**
+ * @brief Stop recording audio and
+ *
+ * @param audio
+ * @return mems_audio_err_t
+ */
+mems_audio_err_t mems_audio_ll_stop(MemsAudio *audio);
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif // _MEMS_AUDIO_LL_H_

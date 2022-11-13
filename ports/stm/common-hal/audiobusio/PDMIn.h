@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Lucian Copeland for Adafruit Industries
+ * Copyright (c) 2022 Matthew McGowan for Blues Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,33 @@
  * THE SOFTWARE.
  */
 
-#pragma once
+#ifndef MICROPY_INCLUDED_STM_COMMON_HAL_AUDIOBUSIO_AUDIOOUT_H
+#define MICROPY_INCLUDED_STM_COMMON_HAL_AUDIOBUSIO_AUDIOOUT_H
 
+#include <stdint.h>
 #include "py/obj.h"
-#include "py/objtuple.h"
+#include "peripherals/pins.h"
+#include "supervisor/memory.h"
 
-#include "shared-bindings/microcontroller/Pin.h"
+typedef struct MemsAudio_t MemsAudio;
+typedef struct MemsAudio_STM32L4SAIPDM_t MemsAudio_STM32L4SAIPDM;
 
 typedef struct {
     mp_obj_base_t base;
-    const mcu_pin_obj_t *pin;
-    bool value;
-    bool pull;
-    bool edge;
-} alarm_pin_pinalarm_obj_t;
+    const mcu_pin_obj_t *clock_pin;
+    const mcu_pin_obj_t *data_pin;
+    uint32_t sample_rate;
+    uint8_t bit_depth;
+    bool mono;
+    uint8_t oversample;
+    supervisor_allocation *audio_allocation;
+    MemsAudio *audio;
+    MemsAudio_STM32L4SAIPDM *audio_impl;
+    /**
+     * @brief Flag to indicate from the ISR that recording is complete.
+     */
+    volatile bool recording_complete;
+} audiobusio_pdmin_obj_t;
 
-mp_obj_t alarm_pin_pinalarm_find_triggered_alarm(size_t n_alarms, const mp_obj_t *alarms);
-mp_obj_t alarm_pin_pinalarm_record_wake_alarm(void);
 
-void alarm_pin_pinalarm_reset(void);
-void alarm_pin_pinalarm_light_reset(void);
-void alarm_pin_pinalarm_set_alarms(bool deep_sleep, size_t n_alarms, const mp_obj_t *alarms);
-bool alarm_pin_pinalarm_woke_this_cycle(void);
-void alarm_pin_pinalarm_entering_deep_sleep(void);
+#endif
