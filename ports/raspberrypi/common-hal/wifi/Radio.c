@@ -42,18 +42,11 @@
 #include "shared-bindings/time/__init__.h"
 #include "shared-module/ipaddress/__init__.h"
 
-#if CIRCUITPY_MDNS
-#include "components/mdns/include/mdns.h"
-#endif
-
+#include "lwip/sys.h"
 #include "lwip/dns.h"
 #include "lwip/icmp.h"
 #include "lwip/raw.h"
 #include "lwip_src/ping.h"
-
-#ifndef PING_ID
-#define PING_ID        0xAFAF
-#endif
 
 #define MAC_ADDRESS_LENGTH 6
 
@@ -76,13 +69,12 @@ NORETURN static void ro_attribute(int attr) {
 }
 
 bool common_hal_wifi_radio_get_enabled(wifi_radio_obj_t *self) {
-    return true;
+    return self->enabled;
 }
 
 void common_hal_wifi_radio_set_enabled(wifi_radio_obj_t *self, bool enabled) {
-    if (!enabled) {
-        ro_attribute(MP_QSTR_enabled);
-    }
+    self->enabled = enabled;
+    // TODO: Actually enable and disable the WiFi module at this point.
 }
 
 mp_obj_t common_hal_wifi_radio_get_hostname(wifi_radio_obj_t *self) {
@@ -97,6 +89,10 @@ void common_hal_wifi_radio_set_hostname(wifi_radio_obj_t *self, const char *host
     memcpy(self->hostname, hostname, strlen(hostname));
     netif_set_hostname(NETIF_STA, self->hostname);
     netif_set_hostname(NETIF_AP, self->hostname);
+}
+
+void wifi_radio_get_mac_address(wifi_radio_obj_t *self, uint8_t *mac) {
+    memcpy(mac, cyw43_state.mac, MAC_ADDRESS_LENGTH);
 }
 
 mp_obj_t common_hal_wifi_radio_get_mac_address(wifi_radio_obj_t *self) {
@@ -167,7 +163,7 @@ void common_hal_wifi_radio_stop_station(wifi_radio_obj_t *self) {
     bindings_cyw43_wifi_enforce_pm();
 }
 
-void common_hal_wifi_radio_start_ap(wifi_radio_obj_t *self, uint8_t *ssid, size_t ssid_len, uint8_t *password, size_t password_len, uint8_t channel, uint8_t authmode, uint8_t max_connections) {
+void common_hal_wifi_radio_start_ap(wifi_radio_obj_t *self, uint8_t *ssid, size_t ssid_len, uint8_t *password, size_t password_len, uint8_t channel, uint32_t authmodes, uint8_t max_connections) {
     mp_raise_NotImplementedError(NULL);
     bindings_cyw43_wifi_enforce_pm();
 }
@@ -245,6 +241,13 @@ mp_obj_t common_hal_wifi_radio_get_ipv4_subnet_ap(wifi_radio_obj_t *self) {
     return common_hal_ipaddress_new_ipv4address(NETIF_AP->netmask.addr);
 }
 
+uint32_t wifi_radio_get_ipv4_address(wifi_radio_obj_t *self) {
+    if (cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA) != CYW43_LINK_UP) {
+        return 0;
+    }
+    return NETIF_STA->ip_addr.addr;
+}
+
 mp_obj_t common_hal_wifi_radio_get_ipv4_address(wifi_radio_obj_t *self) {
     if (cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA) != CYW43_LINK_UP) {
         return mp_const_none;
@@ -295,6 +298,7 @@ void common_hal_wifi_radio_set_ipv4_address(wifi_radio_obj_t *self, mp_obj_t ipv
 }
 
 volatile bool ping_received;
+uint32_t ping_time;
 
 static u8_t
 ping_recv(void *arg, struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *addr) {
@@ -303,6 +307,7 @@ ping_recv(void *arg, struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *addr)
 
     if ((p->tot_len >= (PBUF_IP_HLEN + sizeof(struct icmp_echo_hdr))) &&
         pbuf_remove_header(p, PBUF_IP_HLEN) == 0) {
+
         iecho = (struct icmp_echo_hdr *)p->payload;
 
         if ((iecho->id == PING_ID) && (iecho->seqno == lwip_htons(ping_seq_num))) {
@@ -322,6 +327,7 @@ ping_recv(void *arg, struct raw_pcb *pcb, struct pbuf *p, const ip_addr_t *addr)
 }
 
 mp_int_t common_hal_wifi_radio_ping(wifi_radio_obj_t *self, mp_obj_t ip_address, mp_float_t timeout) {
+    ping_time = sys_now();
     ip_addr_t ping_addr;
     ipaddress_ipaddress_to_lwip(ip_address, &ping_addr);
 

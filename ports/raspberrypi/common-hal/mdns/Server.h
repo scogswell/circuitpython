@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * SPDX-FileCopyrightText: Copyright (c) 2013, 2014 Damien P. George
+ * Copyright (c) 2022 Scott Shawcroft for Adafruit Industries
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,17 @@
  * THE SOFTWARE.
  */
 
-#include "py/runtime.h"
-#include "lib/oofatfs/ff.h"
+#pragma once
 
-DWORD get_fattime(void) {
-    // TODO: Implement this function. For now, fake it.
-    return ((2016 - 1980) << 25) | ((12) << 21) | ((4) << 16) | ((00) << 11) | ((18) << 5) | (23 / 2);
-}
+#include "py/obj.h"
+
+#include "lwip/apps/mdns_opts.h"
+
+typedef struct {
+    mp_obj_base_t base;
+    const char *hostname;
+    const char *instance_name;
+    // "cpy-" "XXXXXX" "\0"
+    char default_hostname[4 + 6 + 1];
+    const char *service_type[MDNS_MAX_SERVICES];
+} mdns_server_obj_t;
