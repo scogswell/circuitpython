@@ -369,7 +369,7 @@ void common_hal_socketpool_socket_connect(socketpool_socket_obj_t *self,
     struct addrinfo *result_i;
     int error = lwip_getaddrinfo(host, NULL, &hints, &result_i);
     if (error != 0 || result_i == NULL) {
-        mp_raise_OSError(EHOSTUNREACH);
+        common_hal_socketpool_socketpool_raise_gaierror_noname();
     }
 
     // Set parameters
@@ -550,7 +550,7 @@ mp_uint_t common_hal_socketpool_socket_sendto(socketpool_socket_obj_t *self,
     struct addrinfo *result_i;
     int error = lwip_getaddrinfo(host, NULL, &hints, &result_i);
     if (error != 0 || result_i == NULL) {
-        mp_raise_OSError(EHOSTUNREACH);
+        common_hal_socketpool_socketpool_raise_gaierror_noname();
     }
 
     // Set parameters
