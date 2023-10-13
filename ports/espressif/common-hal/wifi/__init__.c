@@ -175,6 +175,7 @@ void common_hal_wifi_init(bool user_initiated) {
     // Set both convenience flags to false so it's not forgotten.
     self->sta_mode = 0;
     self->ap_mode = 0;
+    self->enterprise = 0; 
 
     self->event_group_handle = xEventGroupCreateStatic(&self->event_group);
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,

@@ -60,6 +60,7 @@ typedef struct {
     wifi_config_t ap_config;
     esp_netif_ip_info_t ap_ip_info;
     esp_netif_t *ap_netif;
+    bool enterprise; 
 } wifi_radio_obj_t;
 
 extern void common_hal_wifi_radio_gc_collect(wifi_radio_obj_t *self);
